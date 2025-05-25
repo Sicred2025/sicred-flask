@@ -1,12 +1,10 @@
 [build]
-builder = "nixpacks"
-buildCommand = "pip install -r requirements.txt"
+builder = "DOCKERFILE"
 
 [deploy]
-startCommand = "gunicorn run:app --log-file -"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 
 [variables]
-PYTHON_VERSION = "3.9.18"
+PORT = "8000"

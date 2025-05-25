@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+logs/
+*.log
+
+# Base de datos local
+*.sqlite3
+*.db
+
+# Archivos de entorno
+.env
+.env.*
+!.env.example
+
+# Otros
+.DS_Store
+node_modules/
+.vscode/
+.idea/
