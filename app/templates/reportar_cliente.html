@@ -1,0 +1,24 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-10 bg-white rounded-xl shadow-lg p-8 animate-fade-in">
+    <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Reportar Cliente</h2>
+    <form method="POST" action="" enctype="multipart/form-data" class="flex flex-col gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Motivo del reporte *</label>
+            <input type="text" name="motivo" required class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Ej: Incumplimiento de pago, fraude, etc." />
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Comentario adicional</label>
+            <textarea name="comentario" class="w-full rounded-lg border border-gray-300 px-3 py-2 resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Detalles del reporte"></textarea>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Evidencia (opcional)</label>
+            <input type="file" name="pruebas" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+        </div>
+        <button type="submit" class="py-2 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow transition">Reportar cliente</button>
+    </form>
+    <div class="mt-8 text-center">
+        <a href="/dashboard_empresa" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition">Volver al dashboard</a>
+    </div>
+</div>
+{% endblock %}

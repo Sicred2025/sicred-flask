@@ -1,0 +1,21 @@
+<!-- Sidebar solo en desktop, igual al dashboard -->
+<aside class="hidden md:flex flex-col w-60 h-screen bg-white border-r border-gray-200 shadow px-4 py-8 fixed left-0 top-0 z-30">
+  <div class="flex items-center justify-center mb-12">
+    <img src="{{ url_for('static', filename='logo.png') }}" class="h-10 w-auto" alt="Logo">
+  </div>
+  <nav class="flex flex-col gap-1 text-[15px] font-medium">
+    <a href="/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-lg font-semibold" style="color:#6691e7;background:rgba(102,145,231,0.12)"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-users"></i> Clientes</a>
+    <a href="/reportes_usuario" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-file-alt"></i> Reportes</a>
+    {% if user %}
+    <a href="/mis_apelaciones" class="flex items-center gap-3 px-4 py-2 rounded-lg relative" style="color:#eab308">
+      <i class="fas fa-gavel"></i> Mis Apelaciones
+      {% if pending_apelaciones_count and pending_apelaciones_count > 0 %}
+        <span class="absolute right-2 top-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ pending_apelaciones_count }}</span>
+      {% endif %}
+    </a>
+    {% endif %}
+    <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-sign-out-alt"></i> Salir</a>
+  </nav>
+  <div class="mt-auto pt-10 text-xs text-gray-300 text-center">&copy; 2025 Sicred</div>
+</aside>

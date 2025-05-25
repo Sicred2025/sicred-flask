@@ -1,0 +1,49 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-2xl mx-auto px-2 md:px-4 py-8 font-[Rubik] animate-fade-in">
+      <div class="bg-white rounded-3xl shadow-xl p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <i class="fas fa-user text-3xl text-[#13c0ec]"></i>
+          <div>
+            <div class="text-xl font-bold text-gray-900">Mi Perfil</div>
+            <div class="text-sm text-gray-500">{{ user.nombre|capitalize }} {{ user.apellido|capitalize }} | Cédula: {{ user.cedula }}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-xs text-gray-400">Nombre</label>
+            <div class="font-bold text-gray-800">{{ user.nombre|capitalize }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Apellido</label>
+            <div class="font-bold text-gray-800">{{ user.apellido|capitalize }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Cédula</label>
+            <div class="font-bold text-gray-800">{{ user.cedula }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Correo electrónico</label>
+            <div class="font-bold text-gray-800">{{ user.email }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Teléfono</label>
+            <div class="font-bold text-gray-800">{{ user.telefono or '-' }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Dirección</label>
+            <div class="font-bold text-gray-800">{{ user.direccion or '-' }}</div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400">Plan actual</label>
+            <div class="font-bold text-blue-700 uppercase">{{ user.plan }}</div>
+          </div>
+        </div>
+        <a href="/cambiar_password" class="inline-block mt-4 px-4 py-2 rounded-lg bg-gradient-to-r from-[#13c0ec] to-[#866dfc] text-white font-bold shadow hover:from-[#0ea5e9] hover:to-[#7c3aed] transition">Cambiar contraseña</a>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

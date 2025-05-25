@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sicred</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-blue-400 to-cyan-300">
+    <div class="w-full max-w-md mx-auto px-4">
+        <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl px-8 py-10 md:py-12 md:px-10 animate-fade-in">
+            <div class="flex flex-col items-center mb-8">
+                <img src="/static/logo.png" alt="Logo Sicred" class="h-20 w-auto mb-2 drop-shadow-lg">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Bienvenido a Sicred</h1>
+                <p class="text-gray-500 mt-1 text-center text-base">Accede a tu cuenta para continuar</p>
+            </div>
+            <div class="flex justify-center mb-6">
+                <button id="usuarioTab" type="button" class="px-5 py-2 rounded-l-lg font-semibold focus:outline-none transition-all duration-150 bg-blue-600 text-white shadow-md">Usuario</button>
+                <button id="empresaTab" type="button" class="px-5 py-2 rounded-r-lg font-semibold focus:outline-none transition-all duration-150 bg-gray-200 text-gray-700">Empresa</button>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for category, message in messages %}
+                    <div class="flex items-center px-4 py-3 rounded-lg mb-2 text-sm font-medium
+                        {% if category == 'success' %}bg-green-100 text-green-800 border border-green-300{% elif category == 'error' %}bg-red-100 text-red-800 border border-red-300{% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            {% if category == 'success' %}
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            {% elif category == 'error' %}
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            {% else %}
+                            <circle cx="12" cy="12" r="10" />
+                            {% endif %}
+                        </svg>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/login" class="space-y-5">
+                <input type="hidden" name="login_type" id="loginType" value="usuario">
+                <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 12A4 4 0 1 0 8 12a4 4 0 0 0 8 0ZM12 14v2m0 4h.01"/></svg>
+                    </span>
+                    <input type="email" name="email" id="loginEmail" placeholder="Correo electrónico *" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all" autocomplete="username">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m0 0a4 4 0 0 0 4-4V7a4 4 0 1 0-8 0v6a4 4 0 0 0 4 4Z"/></svg>
+                    </span>
+                    <input type="password" name="password" placeholder="Contraseña *" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all" autocomplete="current-password">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transition-all duration-200 text-lg tracking-wide focus:ring-2 focus:ring-blue-400 focus:outline-none">Ingresar</button>
+            </form>
+            {% if error %}
+            <div class="bg-red-100 text-red-600 px-3 py-2 rounded text-sm flex items-center gap-2 mt-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {{ error }}
+            </div>
+            {% endif %}
+            <div class="mt-6 text-center">
+                <span class="text-gray-600">¿No tienes cuenta?</span>
+                <a href="/register" class="text-blue-600 hover:underline font-semibold ml-1">Regístrate</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.8s cubic-bezier(.4,0,.2,1) both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(32px); }
+            to { opacity: 1; transform: none; }
+        }
+    </style>
+    <script>
+        // Tabs para Usuario y Empresa
+        const usuarioTab = document.getElementById('usuarioTab');
+        const empresaTab = document.getElementById('empresaTab');
+        const loginType = document.getElementById('loginType');
+        const loginEmail = document.getElementById('loginEmail');
+        usuarioTab.addEventListener('click', () => {
+            usuarioTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+            usuarioTab.classList.remove('bg-gray-200', 'text-gray-700');
+            empresaTab.classList.add('bg-gray-200', 'text-gray-700');
+            empresaTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+            loginType.value = 'usuario';
+            loginEmail.placeholder = 'Correo electrónico *';
+        });
+        empresaTab.addEventListener('click', () => {
+            empresaTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+            empresaTab.classList.remove('bg-gray-200', 'text-gray-700');
+            usuarioTab.classList.add('bg-gray-200', 'text-gray-700');
+            usuarioTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+            loginType.value = 'empresa';
+            loginEmail.placeholder = 'Correo empresa *';
+        });
+    </script>
+    <!-- Asegúrate que el logo esté en: app/static/SiCred-logo.png -->
+</body>
+</html>

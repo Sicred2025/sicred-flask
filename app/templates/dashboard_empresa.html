@@ -1,0 +1,263 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <!-- Sidebar solo en desktop -->
+  <aside class="hidden md:flex flex-col w-60 h-screen bg-white border-r border-gray-200 shadow px-4 py-8 fixed left-0 top-0 z-30">
+    <div class="flex items-center justify-center mb-12">
+      <img src="{{ url_for('static', filename='logo.png') }}" class="h-10 w-auto" alt="Logo">
+    </div>
+    <nav class="flex flex-col gap-1 text-[15px] font-medium">
+      <a href="/dashboard_empresa" class="flex items-center gap-3 px-4 py-2 rounded-lg font-semibold" style="color:#6691e7;background:rgba(102,145,231,0.12)"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-file-alt"></i> Reportes</a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-sign-out-alt"></i> Salir</a>
+    </nav>
+    <div class="mt-auto pt-10 text-xs text-gray-300 text-center">&copy; 2025 Sicred</div>
+  </aside>
+  <!-- Header escritorio SOLO visible en md y mayor -->
+  <header class="hidden md:flex w-full px-6 items-center justify-between sticky top-0 z-20 min-h-[64px] bg-gradient-to-r from-[#13c0ec] to-[#866dfc] ml-60">
+    <div class="flex items-center gap-3">
+      <img src="{{ url_for('static', filename='logo.png') }}" class="h-8 w-auto" alt="Logo Sicred">
+    </div>
+    <div class="flex items-center gap-6">
+      <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+        <i class="fas fa-bell text-xl"></i>
+      </button>
+      <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+        <i class="fas fa-cog text-xl"></i>
+      </button>
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col items-end">
+          <span class="text-base font-bold text-white leading-tight">{{ company.nombre|capitalize if company else 'Empresa' }}</span>
+          <span class="text-xs text-[#e0e0e0]">Empresa</span>
+        </div>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Avatar" class="h-10 w-10 rounded-full border-2 border-white shadow ml-1">
+      </div>
+    </div>
+  </header>
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-5xl mx-auto px-2 md:px-4 py-8 font-[Rubik] animate-fade-in">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-6">
+        {% for category, message in messages %}
+          <div class="px-4 py-3 rounded-lg mb-2 font-semibold 
+            {% if category == 'success' %}bg-green-100 text-green-800 border border-green-300
+            {% elif category == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
+            {% elif category == 'danger' %}bg-red-100 text-red-800 border border-red-300
+            {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+      <div class="bg-white rounded-3xl shadow-xl p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <i class="fas fa-briefcase text-3xl text-[#13c0ec]"></i>
+          <div>
+            <div class="text-xl font-bold text-gray-900">Panel de Empresa</div>
+            <div class="text-sm text-gray-500">{{ company.nombre|capitalize if company else '' }} | RIF: {{ company.rif if company else '' }}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-blue-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-blue-700">{{ company.consultas_realizadas_mes if company else 0 }}/{{ '∞' if company and company.plan != 'bronce' else 10 }}</div>
+            <div class="text-xs text-gray-500">Consultas este mes</div>
+          </div>
+          <div class="bg-green-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-green-700">{{ clientes_registrados }}</div>
+            <div class="text-xs text-gray-500">Clientes registrados</div>
+          </div>
+        </div>
+        <div class="mb-8">
+          <div class="text-base font-bold text-gray-800 mb-2">Consultar cliente por cédula</div>
+          <form id="form-consulta-cliente" class="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full">
+  <select id="nacionalidad" name="nacionalidad" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none w-full md:w-auto">
+    <option value="V">Venezolana</option>
+    <option value="E">Extranjera</option>
+  </select>
+  <input type="text" id="identificador" name="identificador" required maxlength="15" placeholder="Ingrese cédula (solo números)" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none flex-1 w-full md:w-auto" />
+  <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-[#13c0ec] to-[#866dfc] hover:from-[#0ea5e9] hover:to-[#7c3aed] shadow w-full md:w-auto">Consultar</button>
+</form>
+<div id="resultado-consulta"></div>
+<!-- Modal de registro -->
+<div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-30 z-40 hidden"></div>
+<div id="modal-registro" class="fixed z-50 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg hidden">
+  <button id="cerrar-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+  <h2 class="text-xl font-bold mb-4">Formulario de Registro de personas</h2>
+  <form id="form-registro-persona" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+    <div>
+      <label class="block text-sm font-medium mb-1">Nacionalidad *</label>
+      <select id="modal-nacionalidad" name="nacionalidad" class="rounded-lg border border-gray-300 px-3 py-2 w-full">
+        <option value="V">Venezolana</option>
+        <option value="E">Extranjera</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Nombre *</label>
+      <input type="text" name="nombre" required maxlength="100" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Apellido *</label>
+      <input type="text" name="apellido" required maxlength="100" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Identificación *</label>
+      <input type="text" id="modal-cedula" name="cedula" required maxlength="15" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium mb-1">Dirección</label>
+      <input type="text" name="direccion" maxlength="200" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Correo electrónico</label>
+      <input type="email" name="email" maxlength="120" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Teléfono</label>
+      <input type="text" name="telefono" maxlength="20" class="rounded-lg border border-gray-300 px-3 py-2 w-full" />
+    </div>
+    <div class="md:col-span-2">
+      <button type="submit" class="w-full px-6 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-[#13c0ec] to-[#866dfc] hover:from-[#0ea5e9] hover:to-[#7c3aed] shadow mt-2">Registrar Persona</button>
+    </div>
+  </form>
+  <div id="mensaje-exito" class="hidden text-center text-green-700 font-bold text-lg py-4">Usuario creado exitosamente. Cerrando ventana...</div>
+</div>
+<script src="/static/dashboard_empresa.js"></script>
+            
+          </form>
+        </div>
+        <!-- Aquí se pueden mostrar los resultados de la consulta -->
+        {% if crear_nuevo %}
+        <div class="bg-yellow-50 rounded-xl p-6 mt-6 border border-yellow-200">
+          <div class="text-lg font-bold mb-2 text-yellow-800">No existe un cliente con esa cédula</div>
+          <form method="POST" action="/empresa/crear_cliente" class="flex flex-col gap-4">
+            <input type="hidden" name="cedula" value="{{ cedula_nueva }}" />
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Cédula</label>
+              <input type="text" value="{{ cedula_nueva }}" disabled class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-gray-100" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Nombre</label>
+              <input type="text" name="nombre" required maxlength="100" class="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Apellido</label>
+              <input type="text" name="apellido" required maxlength="100" class="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Dirección</label>
+              <input type="text" name="direccion" maxlength="200" class="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+              <input type="email" name="email" required maxlength="120" class="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <input type="text" name="telefono" maxlength="20" class="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Contraseña temporal</label>
+              <input type="password" name="password" required minlength="6" maxlength="50" class="w-full rounded-lg border border-gray-300 px-3 py-2" placeholder="Mínimo 6 caracteres" />
+            </div>
+            <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 shadow">Crear cliente con score máximo</button>
+          </form>
+        </div>
+        {% endif %}
+        {% if cliente %}
+        <div class="bg-gray-50 rounded-xl p-6 mt-6">
+          <div class="text-lg font-bold mb-2">Datos del cliente</div>
+          <div class="flex flex-col md:flex-row gap-6">
+            <div>
+              <div class="text-gray-600"><span class="font-semibold">Nombre:</span> {{ cliente.nombre }}</div>
+              <div class="text-gray-600"><span class="font-semibold">Cédula/RIF:</span> {{ cliente.cedula or cliente.rif }}</div>
+              <div class="text-gray-600"><span class="font-semibold">Dirección:</span> {{ cliente.direccion if cliente.direccion else '-' }}</div>
+              <div class="text-gray-600"><span class="font-semibold">Teléfono:</span> {{ cliente.telefono if cliente.telefono else '-' }}</div>
+            </div>
+            <div>
+              <div class="text-gray-600"><span class="font-semibold">Score:</span> 
+  <span class="font-bold px-3 py-1 rounded-full {{ score_color }}">{{ cliente.score }}</span>
+  {% if cliente.score <= 400 %}<span class="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Malo</span>{% endif %}
+  {% if cliente.score == 450 %}<span class="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">Estandar</span>{% endif %}
+  {% if 550 <= cliente.score < 650 %}<span class="ml-2 text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded">Medio</span>{% endif %}
+  {% if 650 <= cliente.score < 750 %}<span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Bueno</span>{% endif %}
+  {% if cliente.score >= 750 %}<span class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Excelente</span>{% endif %}
+</div>
+{% if cliente.estado_crediticio %}
+<div class="text-gray-600"><span class="font-semibold">Estado:</span> {{ cliente.estado_crediticio|capitalize }}</div>
+{% endif %}
+            </div>
+          </div>
+          <!-- Botones para reportar/modificar score -->
+          <div class="mt-4 flex gap-4">
+            <a href="/empresa/reportar_cliente/{{ cliente.id }}" class="px-4 py-2 rounded-lg font-bold text-white bg-red-500 hover:bg-red-700 shadow">Reportar cliente</a>
+            <a href="/empresa/modificar_score/{{ cliente.id }}" class="px-4 py-2 rounded-lg font-bold text-white bg-blue-500 hover:bg-blue-700 shadow">Modificar score</a>
+          </div>
+        </div>
+        {% endif %}
+        {% if credit_history_list and cliente %}
+        <div class="bg-white rounded-xl shadow mt-8 p-6">
+          <div class="text-base font-bold text-gray-800 mb-2">Historial de Reportes</div>
+          <table class="min-w-full text-sm text-left border">
+            <thead>
+              <tr class="bg-blue-50">
+                <th class="px-3 py-2">Fecha</th>
+                <th class="px-3 py-2">Tipo</th>
+                <th class="px-3 py-2">Estado</th>
+                <th class="px-3 py-2">Monto</th>
+                <th class="px-3 py-2">Impacto</th>
+                <th class="px-3 py-2">Comentario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in credit_history_list %}
+              <tr class="border-b">
+                <td class="px-3 py-2">{{ item.fecha_apertura.strftime('%Y-%m-%d') }}</td>
+                <td class="px-3 py-2">{{ item.tipo|capitalize }}</td>
+                <td class="px-3 py-2">
+                  {% if item.estado == 'mora' %}
+                    <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded">Mora</span>
+                  {% elif item.estado == 'cerrada' %}
+                    <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded">Cerrada</span>
+                  {% elif item.estado == 'abierta' %}
+                    <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">Abierta</span>
+                  {% else %}
+                    {{ item.estado }}
+                  {% endif %}
+                </td>
+                <td class="px-3 py-2">{{ item.monto }}</td>
+                <td class="px-3 py-2">{{ item.score_impact }}</td>
+                <td class="px-3 py-2">{{ item.comentario or '-' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+  <!-- Bottom navbar solo en móvil -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-t md:hidden flex justify-around items-center h-16 px-2">
+    <a href="/dashboard_empresa" class="flex flex-col items-center text-xs font-semibold text-[#6691e7]">
+      <i class="fas fa-home text-lg mb-0.5"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-users text-lg mb-0.5"></i>
+      <span>Clientes</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-file-alt text-lg mb-0.5"></i>
+      <span>Reportes</span>
+    </a>
+    <a href="/logout" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-sign-out-alt text-lg mb-0.5"></i>
+      <span>Salir</span>
+    </a>
+  </nav>
+</div>
+{% endblock %}

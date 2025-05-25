@@ -1,0 +1,60 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 bg-white rounded-xl shadow-lg p-8 animate-fade-in">
+    <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Gestión de Apelaciones</h2>
+    {% if apelaciones %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left border">
+            <thead>
+                <tr class="bg-blue-100">
+                    <th class="px-4 py-2">Usuario</th>
+                    <th class="px-4 py-2">Fecha</th>
+                    <th class="px-4 py-2">Motivo</th>
+                    <th class="px-4 py-2">Comentario</th>
+                    <th class="px-4 py-2">Evidencia</th>
+                    <th class="px-4 py-2">Estado</th>
+                    <th class="px-4 py-2">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for apelacion in apelaciones %}
+                <tr class="border-b">
+                    <td class="px-4 py-2">{{ apelacion.user_id }}</td>
+                    <td class="px-4 py-2">{{ apelacion.fecha_creacion.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-4 py-2">{{ apelacion.motivo }}</td>
+                    <td class="px-4 py-2">{{ apelacion.comentario or '-' }}</td>
+                    <td class="px-4 py-2">
+                        {% if apelacion.pruebas %}
+                        <a href="/{{ apelacion.pruebas }}" target="_blank" class="text-blue-600 underline">Ver archivo</a>
+                        {% else %}-{% endif %}
+                    </td>
+                    <td class="px-4 py-2">
+                        {% if apelacion.estado == 'pendiente' %}
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pendiente</span>
+                        {% elif apelacion.estado == 'aprobada' %}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Aprobada</span>
+                        {% elif apelacion.estado == 'rechazada' %}
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Rechazada</span>
+                        {% else %}
+                            {{ apelacion.estado }}
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">
+                        {% if apelacion.estado == 'pendiente' %}
+                        <form method="POST" class="flex gap-2">
+                            <input type="hidden" name="apelacion_id" value="{{ apelacion.id }}">
+                            <button type="submit" name="accion" value="aprobar" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">Aprobar</button>
+                            <button type="submit" name="accion" value="rechazar" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Rechazar</button>
+                        </form>
+                        {% else %}-{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center text-gray-500">No hay apelaciones registradas.</div>
+    {% endif %}
+</div>
+{% endblock %}

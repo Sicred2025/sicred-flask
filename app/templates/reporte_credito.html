@@ -1,0 +1,153 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <!-- Sidebar solo en desktop -->
+  <aside class="hidden md:flex flex-col w-60 h-screen bg-white border-r border-gray-200 shadow px-4 py-8 fixed left-0 top-0 z-30">
+    <div class="flex items-center justify-center mb-12">
+      <img src="{{ url_for('static', filename='logo.png') }}" class="h-10 w-auto" alt="Logo">
+    </div>
+    <nav class="flex flex-col gap-1 text-[15px] font-medium">
+      <a href="/dashboard" class="flex items-center gap-3 px-4 py-2 rounded-lg text-primary font-bold"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-file-alt"></i> Reportes</a>
+      <a href="/logout" class="flex items-center gap-3 px-4 py-2 rounded-lg" style="color:#7c7f90"><i class="fas fa-sign-out-alt"></i> Salir</a>
+    </nav>
+    <div class="mt-auto pt-10 text-xs text-gray-300 text-center">&copy; 2025 Sicred</div>
+  </aside>
+  <!-- Header escritorio SOLO visible en md y mayor -->
+  <header class="hidden md:flex w-full px-6 items-center justify-between sticky top-0 z-20 min-h-[64px] bg-gradient-to-r from-[#13c0ec] to-[#866dfc] ml-60">
+    <div class="flex items-center gap-3">
+      <img src="{{ url_for('static', filename='logo.png') }}" class="h-8 w-auto" alt="Logo Sicred">
+    </div>
+    <div class="flex items-center gap-6">
+      <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+        <i class="fas fa-bell text-xl"></i>
+      </button>
+      <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+        <i class="fas fa-cog text-xl"></i>
+      </button>
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col items-end">
+          <span class="text-base font-bold text-white leading-tight">{{ user.nombre|capitalize if user else 'Usuario' }}</span>
+          <span class="text-xs text-[#e0e0e0]">Usuario</span>
+        </div>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Avatar" class="h-10 w-10 rounded-full border-2 border-white shadow ml-1">
+      </div>
+    </div>
+  </header>
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-3xl mx-auto px-2 md:px-4 py-8 font-[Rubik] animate-fade-in">
+      <div class="bg-white rounded-3xl shadow-xl p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <i class="fas fa-user-shield text-3xl text-[#13c0ec]"></i>
+          <div>
+            <div class="text-xl font-bold text-gray-900">Reporte de Vida Crediticia</div>
+            <div class="text-sm text-gray-500">{{ user.nombre|capitalize }} {{ user.apellido|capitalize }} | Cédula: {{ user.cedula }}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-blue-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-blue-700">{{ reporte.score }}</div>
+            <div class="text-xs text-gray-500">Score actual</div>
+          </div>
+          <div class="bg-green-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-green-700">{{ reporte.cuentas_abiertas }}</div>
+            <div class="text-xs text-gray-500">Cuentas abiertas</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-gray-700">{{ reporte.cuentas_cerradas }}</div>
+            <div class="text-xs text-gray-500">Cuentas cerradas</div>
+          </div>
+          <div class="bg-red-50 rounded-xl p-4 flex flex-col items-center">
+            <div class="text-2xl font-extrabold text-red-600">{{ reporte.reportes_mora }}</div>
+            <div class="text-xs text-gray-500">Reportes de mora</div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <div class="text-base font-bold text-gray-800 mb-2">Historial reciente</div>
+          <div class="bg-gray-50 rounded-xl p-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Evento</th>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentario</th>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impacto</th>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                {% for item in reporte.historial %}
+                <tr>
+                  <td class="px-3 py-2 whitespace-nowrap">{{ item.fecha }}</td>
+                  <td class="px-3 py-2 whitespace-nowrap">{{ item.evento }}</td>
+                  <td class="px-3 py-2 whitespace-nowrap">{{ item.comentario or '-' }}</td>
+                  <td class="px-3 py-2 whitespace-nowrap">{{ item.impacto }}</td>
+                  <td class="px-3 py-2 whitespace-nowrap">{{ item.monto if item.monto else '-' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="px-3 py-2 text-center text-gray-400">No hay historial reciente.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% if reporte.reportes_mora > 0 %}
+        <button type="button" id="abrirModalApelar" class="w-full mt-4 py-3 bg-gradient-to-r from-red-400 to-pink-400 hover:from-red-500 hover:to-pink-500 text-white font-bold rounded-xl shadow transition focus:outline-none">Apelar reporte</button>
+        <!-- Modal Apelación -->
+        <div id="modalApelar" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+          <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg relative animate-fade-in">
+            <button type="button" id="cerrarModalApelar" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            <div class="mb-4 text-center">
+              <h2 class="text-xl font-extrabold text-gray-900 mb-1">Apelar reporte de mora</h2>
+              <p class="text-gray-500 text-sm">Describe el motivo de tu apelación y adjunta evidencia si es posible.</p>
+            </div>
+            <form method="POST" action="/apelar_reporte" enctype="multipart/form-data" class="flex flex-col gap-4">
+  <input type="hidden" name="credit_history_id" value="{{ reporte.credit_history_id if reporte.credit_history_id is defined else '' }}">
+  <textarea name="motivo" required placeholder="Explica brevemente por qué deseas apelar este reporte..." class="w-full rounded-lg border border-gray-300 px-3 py-2 resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
+  <label class="block text-sm font-medium text-gray-700">Evidencia (opcional):
+    <input type="file" name="evidencia" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+  </label>
+  <button type="submit" class="py-2 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-[#13c0ec] to-[#866dfc] hover:from-[#0ea5e9] hover:to-[#7c3aed] shadow transition">Enviar apelación</button>
+</form>
+          </div>
+        </div>
+        <script>
+          const abrirApelar = document.getElementById('abrirModalApelar');
+          const cerrarApelar = document.getElementById('cerrarModalApelar');
+          const modalApelar = document.getElementById('modalApelar');
+          if (abrirApelar && cerrarApelar && modalApelar) {
+            abrirApelar.addEventListener('click', () => { modalApelar.classList.remove('hidden'); });
+            cerrarApelar.addEventListener('click', () => { modalApelar.classList.add('hidden'); });
+            window.addEventListener('click', function(e) {
+              if (e.target === modalApelar) { modalApelar.classList.add('hidden'); }
+            });
+          }
+        </script>
+        {% endif %}
+        <a href="/dashboard" class="inline-block mt-6 px-6 py-2 bg-gradient-to-r from-[#13c0ec] to-[#866dfc] text-white rounded-xl font-bold shadow hover:from-[#0ea5e9] hover:to-[#7c3aed] transition">Volver al dashboard</a>
+      </div>
+    </main>
+  </div>
+  <!-- Bottom navbar solo en móvil -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-t md:hidden flex justify-around items-center h-16 px-2">
+    <a href="/dashboard" class="flex flex-col items-center text-xs font-semibold text-[#6691e7]">
+      <i class="fas fa-home text-lg mb-0.5"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-users text-lg mb-0.5"></i>
+      <span>Clientes</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-file-alt text-lg mb-0.5"></i>
+      <span>Reportes</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-xs font-semibold text-[#7c7f90]">
+      <i class="fas fa-user text-lg mb-0.5"></i>
+      <span>Perfil</span>
+    </a>
+  </nav>
+</div>
+{% endblock %}
