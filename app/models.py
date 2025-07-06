@@ -3,6 +3,8 @@ from . import db
 from datetime import datetime
 
 class Company(db.Model):
+    __tablename__ = 'company'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     rif = db.Column(db.String(50), unique=True, nullable=False)
@@ -13,6 +15,8 @@ class Company(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class User(db.Model):
+    __tablename__ = 'users'  # 👈 Solución clave
+
     id = db.Column(db.Integer, primary_key=True)
     cedula = db.Column(db.String(50), nullable=False, index=True)
     nacionalidad = db.Column(db.String(5), nullable=False, index=True, default='V')
@@ -28,26 +32,30 @@ class User(db.Model):
     telefono = db.Column(db.String(20))
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
-
 class Appeal(db.Model):
+    __tablename__ = 'appeal'
+
     id = db.Column(db.Integer, primary_key=True)
     motivo = db.Column(db.String(255), nullable=False)
     comentario = db.Column(db.Text)
     pruebas = db.Column(db.String(255))  # Ruta al archivo adjunto
     estado = db.Column(db.String(20), default='pendiente')  # pendiente, aprobada, rechazada
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 👈 corregido
     credit_history_id = db.Column(db.Integer, db.ForeignKey('credit_history.id'))
     cedula = db.Column(db.String(50), nullable=True, index=True)
     nacionalidad = db.Column(db.String(5), nullable=True, index=True)
 
-
 class ConsultaCredito(db.Model):
+    __tablename__ = 'consulta_credito'
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 👈 corregido
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
 
 class CreditHistory(db.Model):
+    __tablename__ = 'credit_history'
+
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(50), nullable=False)
     estado = db.Column(db.String(50), nullable=False)
@@ -58,5 +66,5 @@ class CreditHistory(db.Model):
     comentario = db.Column(db.String(255))
     motivo = db.Column(db.String(255))
     pruebas = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 👈 corregido
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
