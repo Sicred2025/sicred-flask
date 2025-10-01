@@ -1153,7 +1153,7 @@ def api_descargar_reporte(reporte_id):
     p.drawString(50, y, 'Reporte de Cliente y Crédito')
     y -= 30
     p.setFont('Helvetica', 12)
-    p.drawString(50, y, f'Fecha: {rep.fecha_apertura.strftime('%Y-%m-%d') if rep.fecha_apertura else '-'}')
+    p.drawString(50, y, f"Fecha: {rep.fecha_apertura.strftime('%Y-%m-%d') if rep.fecha_apertura else '-'}")
     y -= 20
     if cliente:
         p.drawString(50, y, f'Cliente: {cliente.nombre} {cliente.apellido} ({cliente.nacionalidad}{cliente.cedula})')
