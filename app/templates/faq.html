@@ -1,0 +1,94 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+      <!-- Header de FAQ -->
+      <div class="text-center mb-12">
+        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-question text-white text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Preguntas Frecuentes para Empresas</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Resuelve tus dudas más comunes sobre la gestión crediticia empresarial en SiCred.
+        </p>
+      </div>
+      
+      <!-- Preguntas frecuentes -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <div class="space-y-6">
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-start">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                <i class="fas fa-user-plus text-blue-600 text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Cómo agrego un nuevo cliente?</h3>
+                <p class="text-gray-600">Desde la sección <b>Clientes</b> haz clic en <b>Agregar cliente</b> y completa el formulario con los datos requeridos.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-start">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                <i class="fas fa-chart-line text-green-600 text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Puedo modificar el score de un cliente varias veces?</h3>
+                <p class="text-gray-600">Sí, puedes modificar el score tantas veces como sea necesario, siempre dejando un comentario justificando el cambio.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-start">
+              <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                <i class="fas fa-file-alt text-yellow-600 text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Cómo descargo el historial de reportes?</h3>
+                <p class="text-gray-600">En la sección <b>Reportes</b> haz clic en <b>Descargar</b> para obtener el PDF de cada reporte individual.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-start">
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                <i class="fas fa-gavel text-purple-600 text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Qué hago si un cliente apela un reporte?</h3>
+                <p class="text-gray-600">Revisa la sección <b>Apelaciones</b> y responde a la solicitud del cliente con la información y documentación necesaria.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="pb-6">
+            <div class="flex items-start">
+              <div class="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                <i class="fas fa-headset text-cyan-600 text-sm"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Cómo contacto al soporte?</h3>
+                <p class="text-gray-600">Utiliza la sección <b>Contacto</b> para enviar tu consulta y recibir ayuda especializada para empresas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Información adicional -->
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded text-blue-800">
+        <div class="flex items-start">
+          <i class="fas fa-lightbulb text-blue-600 mt-1 mr-3"></i>
+          <div>
+            <b>¿No encuentras tu respuesta?</b> Revisa la sección <b>Ayuda</b> para más información o contacta directamente a nuestro soporte.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %} 

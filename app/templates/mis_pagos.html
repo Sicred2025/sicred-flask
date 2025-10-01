@@ -1,0 +1,78 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+{% if empresa %}
+  {% include 'partials/sidebar_empresa.html' %}
+{% endif %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <div class="flex-1 flex flex-col min-h-screen {% if empresa %}md:ml-64{% else %}md:ml-64{% endif %} bg-gray-50">
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-list-alt text-white text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">Historial de Pagos</h2>
+        <p class="text-lg text-gray-600 max-w-xl mx-auto">Consulta y filtra todos los pagos realizados{{ ' por tu empresa' if empresa else '' }}.</p>
+      </div>
+      <!-- Filtros -->
+      <form method="get" class="flex flex-col md:flex-row gap-4 items-center mb-8 bg-white rounded-xl shadow p-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Mes</label>
+          <input type="month" name="mes" value="{{ mes or '' }}" class="rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Referencia</label>
+          <input type="text" name="referencia" value="{{ referencia or '' }}" placeholder="Buscar referencia" class="rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div class="pt-5 md:pt-0">
+          <button type="submit" class="py-2 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow transition">Filtrar</button>
+        </div>
+      </form>
+      <!-- Tabla de pagos -->
+      <div class="overflow-x-auto bg-white rounded-xl shadow">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="text-xs text-gray-600 uppercase">
+              <th class="py-2 px-2">Fecha</th>
+              <th class="py-2 px-2">Monto</th>
+              <th class="py-2 px-2">Referencia</th>
+              <th class="py-2 px-2">Estado</th>
+              <th class="py-2 px-2">Método</th>
+              <th class="py-2 px-2">Titular</th>
+              <th class="py-2 px-2">Observaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pago in pagos %}
+            <tr class="border-b hover:bg-blue-50">
+              <td class="py-2 px-2">{{ pago.created_at.strftime('%d/%m/%Y') if pago.created_at else '-' }}</td>
+              <td class="py-2 px-2">{{ pago.monto }} {{ pago.moneda }}</td>
+              <td class="py-2 px-2">{{ pago.referencia }}</td>
+              <td class="py-2 px-2">
+                {% if pago.estado == 'pendiente' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"><i class="fas fa-clock mr-1"></i>Pendiente</span>
+                {% elif pago.estado == 'aprobado' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-800"><i class="fas fa-check-circle mr-1"></i>Aprobado</span>
+                {% elif pago.estado == 'rechazado' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-800"><i class="fas fa-times-circle mr-1"></i>Rechazado</span>
+                {% elif pago.estado == 'suspendido' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800"><i class="fas fa-ban mr-1"></i>Suspendido</span>
+                {% else %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-800">{{ pago.estado|capitalize }}</span>
+                {% endif %}
+              </td>
+              <td class="py-2 px-2">{{ pago.metodo }}</td>
+              <td class="py-2 px-2">{{ pago.titular }}</td>
+              <td class="py-2 px-2">{{ pago.observaciones }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="py-6 text-center text-gray-400">No se encontraron pagos con los filtros seleccionados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %} 

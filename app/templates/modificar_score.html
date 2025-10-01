@@ -18,36 +18,61 @@
   {% endif %}
 {% endwith %}
     <form method="POST" action="" class="flex flex-col gap-4">
-        {% if not cliente %}
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Cédula *</label>
-            <input type="text" name="cedula" value="{{ cedula or '' }}" required class="w-full rounded-lg border border-gray-300 px-3 py-2" maxlength="15">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Cédula *</label>
+                <input type="text" name="cedula" value="{{ cliente.cedula if cliente else cedula or '' }}" required class="w-full rounded-lg border border-gray-300 px-3 py-2" maxlength="15">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nacionalidad *</label>
+                <select name="nacionalidad" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+                    <option value="V" {% if (cliente and cliente.nacionalidad == 'V') or nacionalidad == 'V' %}selected{% endif %}>Venezolana</option>
+                    <option value="E" {% if (cliente and cliente.nacionalidad == 'E') or nacionalidad == 'E' %}selected{% endif %}>Extranjera</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+                <input type="text" name="nombre" value="{{ cliente.nombre if cliente else '' }}" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Apellido *</label>
+                <input type="text" name="apellido" value="{{ cliente.apellido if cliente else '' }}" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" value="{{ cliente.email if cliente else '' }}" class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                <input type="text" name="telefono" value="{{ cliente.telefono if cliente else '' }}" class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                <input type="text" name="direccion" value="{{ cliente.direccion if cliente else '' }}" class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Nacionalidad *</label>
-            <select name="nacionalidad" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
-                <option value="V" {% if nacionalidad == 'V' %}selected{% endif %}>Venezolana</option>
-                <option value="E" {% if nacionalidad == 'E' %}selected{% endif %}>Extranjera</option>
+            <label class="block text-sm font-medium text-gray-700 mt-4">Tipo de evento a reportar *</label>
+            <select name="evento" required class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <option value="">Selecciona un evento</option>
+                <option value="pago_puntual">Pago puntual (+10)</option>
+                <option value="mora_leve">Mora leve (&lt;30 días, -25)</option>
+                <option value="mora_grave">Mora grave (&gt;90 días, -60)</option>
+                <option value="cuenta_cerrada">Cuenta cerrada normal (+5)</option>
+                <option value="incumplimiento">Incumplimiento total (-100)</option>
+                <option value="nuevo_credito">Nuevo crédito (-10)</option>
             </select>
         </div>
-        {% else %}
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Cliente</label>
-            <div class="bg-gray-100 rounded-lg px-3 py-2">{{ cliente.nombre }} {{ cliente.apellido }} - {{ cliente.cedula }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Impacto en score *</label>
+                <input type="number" name="impacto" value="{{ impacto if impacto is defined else '' }}" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Monto (opcional)</label>
+                <input type="number" name="monto" value="{{ monto if monto is defined else '' }}" class="w-full rounded-lg border border-gray-300 px-3 py-2">
+            </div>
         </div>
-        {% endif %}
-        <div>
-    <label class="block text-sm font-medium text-gray-700">Tipo de evento a reportar *</label>
-    <select name="evento" required class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-        <option value="">Selecciona un evento</option>
-        <option value="pago_puntual">Pago puntual (+10)</option>
-        <option value="mora_leve">Mora leve (&lt;30 días, -25)</option>
-        <option value="mora_grave">Mora grave (&gt;90 días, -60)</option>
-        <option value="cuenta_cerrada">Cuenta cerrada normal (+5)</option>
-        <option value="incumplimiento">Incumplimiento total (-100)</option>
-        <option value="nuevo_credito">Nuevo crédito (-10)</option>
-    </select>
-</div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Comentario (opcional)</label>
             <textarea name="comentario" class="w-full rounded-lg border border-gray-300 px-3 py-2 resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Motivo del cambio de score"></textarea>
@@ -59,3 +84,17 @@
     </div>
 </div>
 {% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.tippy) {
+    tippy('.tippy', {
+      theme: 'light-border',
+      animation: 'scale',
+      arrow: true,
+      placement: 'top',
+      delay: [100, 50],
+      maxWidth: 260
+    });
+  }
+});
+</script>

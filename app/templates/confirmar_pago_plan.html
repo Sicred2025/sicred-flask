@@ -1,0 +1,298 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <!-- Sidebar -->
+  {% include 'partials/sidebar.html' %}
+
+  <!-- Header móvil -->
+  <nav class="flex md:hidden w-full px-4 py-0 items-center justify-between sticky top-0 z-50 min-h-[56px] bg-gradient-to-r from-[#13c0ec] to-[#866dfc]">
+    <img src="{{ url_for('static', filename='logo.png') }}" class="h-8 w-auto" alt="Logo">
+    <div class="flex items-center gap-4">
+      <button class="relative text-white focus:outline-none">
+        <i class="fas fa-crown text-lg"></i>
+      </button>
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Avatar" class="h-8 w-8 rounded-full border-2 border-white shadow">
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <!-- Main content -->
+    <main class="flex-1 w-full max-w-2xl mx-auto px-4 py-8">
+      <!-- Alertas de éxito/error -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-6 space-y-4">
+            {% for category, message in messages %}
+              <div class="rounded-lg p-4 border-l-4 {% if category == 'success' %}bg-green-50 border-green-400 text-green-800{% elif category == 'danger' %}bg-red-50 border-red-400 text-red-800{% elif category == 'warning' %}bg-yellow-50 border-yellow-400 text-yellow-800{% else %}bg-blue-50 border-blue-400 text-blue-800{% endif %}">
+                <div class="flex items-center">
+                  <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} mr-3"></i>
+                  <span class="font-medium">{{ message }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Pagos recientes -->
+      {% if pagos and pagos|length > 0 %}
+      <div class="mb-8">
+        <a href="/empresa/mis_pagos" class="block bg-blue-50 border-l-4 border-blue-400 p-4 rounded text-blue-800 mb-2 hover:bg-blue-100 transition">
+          <b>Ver historial de pagos &rarr;</b>
+        </a>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded text-blue-800 mb-2">
+          <b>Pagos recientes:</b> Consulta el estado de tus últimos pagos.
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left">
+            <thead>
+              <tr class="text-xs text-gray-600 uppercase">
+                <th class="py-2 px-2">Fecha</th>
+                <th class="py-2 px-2">Monto</th>
+                <th class="py-2 px-2">Referencia</th>
+                <th class="py-2 px-2">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pago in pagos %}
+              <tr class="border-b">
+                <td class="py-2 px-2">{{ pago.created_at.strftime('%d/%m/%Y') if pago.created_at else '-' }}</td>
+                <td class="py-2 px-2">{{ pago.monto }} {{ pago.moneda }}</td>
+                <td class="py-2 px-2">{{ pago.referencia }}</td>
+                <td class="py-2 px-2">
+                  {% if pago.estado == 'pendiente' %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"><i class="fas fa-clock mr-1"></i>Pendiente</span>
+                  {% elif pago.estado == 'aprobado' %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-800"><i class="fas fa-check-circle mr-1"></i>Aprobado</span>
+                  {% elif pago.estado == 'rechazado' %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-800"><i class="fas fa-times-circle mr-1"></i>Rechazado</span>
+                  {% elif pago.estado == 'suspendido' %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800"><i class="fas fa-ban mr-1"></i>Suspendido</span>
+                  {% else %}
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-800">{{ pago.estado|capitalize }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Header del portal de pagos -->
+      <div class="text-center mb-10">
+        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-credit-card text-white text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">Confirmar Plan y Pago</h2>
+        <p class="text-lg text-gray-600 max-w-xl mx-auto">Confirma tu plan seleccionado y realiza el pago de forma segura.</p>
+      </div>
+
+      <!-- Progreso de pasos -->
+      <div class="flex items-center justify-center mb-10">
+        <div class="flex items-center gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white {% if paso == 1 %}bg-blue-500 border-4 border-blue-300{% else %}bg-blue-400 border-4 border-blue-300{% endif %}">1</div>
+            <span class="text-xs mt-2 {% if paso == 1 %}text-blue-700 font-semibold{% else %}text-blue-400{% endif %}">Confirmar Plan</span>
+          </div>
+          <div class="w-8 h-1 bg-blue-200"></div>
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold {% if paso == 2 %}text-white bg-blue-500 border-4 border-blue-300{% else %}text-gray-400 bg-gray-100 border-4 border-gray-200{% endif %}">2</div>
+            <span class="text-xs mt-2 {% if paso == 2 %}text-blue-700 font-semibold{% else %}text-gray-400{% endif %}">Datos de Pago</span>
+          </div>
+          <div class="w-8 h-1 bg-blue-200"></div>
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold {% if paso == 3 %}text-white bg-blue-500 border-4 border-blue-300{% else %}text-gray-400 bg-gray-100 border-4 border-gray-200{% endif %}">3</div>
+            <span class="text-xs mt-2 {% if paso == 3 %}text-blue-700 font-semibold{% else %}text-gray-400{% endif %}">Montos y Detalles</span>
+          </div>
+          <div class="w-8 h-1 bg-blue-200"></div>
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold {% if paso == 4 %}text-white bg-blue-500 border-4 border-blue-300{% else %}text-gray-400 bg-gray-100 border-4 border-gray-200{% endif %}">4</div>
+            <span class="text-xs mt-2 {% if paso == 4 %}text-blue-700 font-semibold{% else %}text-gray-400{% endif %}">Comprobante</span>
+          </div>
+        </div>
+      </div>
+
+      {% if paso == 1 %}
+      <!-- Paso 1: Confirmación del Plan -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Paso 1: Confirmar Plan Seleccionado</h3>
+        
+        <!-- Resumen del plan -->
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-6">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-crown text-white text-2xl"></i>
+            </div>
+            <h4 class="text-2xl font-bold text-gray-900 mb-2">{{ plan_nombre|title }}</h4>
+            <div class="text-3xl font-bold text-blue-600 mb-2">{{ plan.precio }}</div>
+            <div class="text-gray-600">{{ plan.periodo }}</div>
+          </div>
+          
+          <div class="space-y-3">
+            <h5 class="font-semibold text-gray-900 mb-3">Características incluidas:</h5>
+            {% for caracteristica in plan.caracteristicas %}
+            <div class="flex items-center gap-3">
+              <i class="fas fa-check text-green-500"></i>
+              <span class="text-gray-700">{{ caracteristica }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800">
+          <div class="flex items-center">
+            <i class="fas fa-info-circle mr-3"></i>
+            <div>
+              <strong>Importante:</strong> Tu plan quedará pendiente de activación hasta que el administrador apruebe tu pago. Recibirás una notificación cuando sea aprobado.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4 pt-4">
+          <a href="{{ url_for('main.empresa_planes') }}" class="py-3 px-8 rounded-lg font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 shadow-lg transition">
+            <i class="fas fa-arrow-left mr-2"></i>Volver a Planes
+          </a>
+          <form method="POST" class="inline">
+            <input type="hidden" name="paso" value="1">
+            <button type="submit" class="py-3 px-8 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-lg transition transform hover:scale-105">
+              Continuar <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% elif paso == 2 %}
+      <!-- Paso 2: Datos de Pago -->
+      <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        <input type="hidden" name="paso" value="2">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center"><i class="fas fa-info-circle text-blue-500 mr-2"></i> Paso 2: Datos de Pago</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de pago</label>
+            <select name="tipo_pago" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+              <option value="">Selecciona</option>
+              <option value="Moneda Digital" {% if pago_data.tipo_pago == 'Moneda Digital' %}selected{% endif %}>Moneda Digital</option>
+              <option value="Pago Móvil" {% if pago_data.tipo_pago == 'Pago Móvil' %}selected{% endif %}>Pago Móvil</option>
+              <option value="Transferencia Bs." {% if pago_data.tipo_pago == 'Transferencia Bs.' %}selected{% endif %}>Transferencia Bs.</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Moneda</label>
+            <select name="moneda" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+              <option value="">Selecciona</option>
+              <option value="USD" {% if pago_data.moneda == 'USD' %}selected{% endif %}>USD</option>
+              <option value="Bs." {% if pago_data.moneda == 'Bs.' %}selected{% endif %}>Bs.</option>
+              <option value="USDT" {% if pago_data.moneda == 'USDT' %}selected{% endif %}>USDT</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Forma de pago / Banco</label>
+          <select name="metodo" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+            <option value="">Selecciona</option>
+            <optgroup label="Moneda Digital">
+              <option value="Airtm" {% if pago_data.metodo == 'Airtm' %}selected{% endif %}>Airtm</option>
+              <option value="Binance" {% if pago_data.metodo == 'Binance' %}selected{% endif %}>Binance</option>
+              <option value="Zelle" {% if pago_data.metodo == 'Zelle' %}selected{% endif %}>Zelle</option>
+            </optgroup>
+            <optgroup label="Pago Móvil">
+              <option value="Banco Venezuela" {% if pago_data.metodo == 'Banco Venezuela' %}selected{% endif %}>Banco de Venezuela</option>
+            </optgroup>
+            <optgroup label="Transferencia Bs.">
+              <option value="BNC Maracaibo 3961" {% if pago_data.metodo == 'BNC Maracaibo 3961' %}selected{% endif %}>BANCO BNC MARACAIBO 3961</option>
+              <option value="Banco de Venezuela" {% if pago_data.metodo == 'Banco de Venezuela' %}selected{% endif %}>Banco de Venezuela</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="flex justify-between gap-4 pt-4">
+          <button type="button" onclick="window.history.back()" class="py-3 px-8 rounded-lg font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 shadow-lg transition">Anterior</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-lg transition transform hover:scale-105">
+            Siguiente <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
+      </form>
+      {% elif paso == 3 %}
+      <!-- Paso 3: Montos y Detalles -->
+      <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        <input type="hidden" name="paso" value="3">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center"><i class="fas fa-dollar-sign text-green-500 mr-2"></i> Paso 3: Montos y Detalles</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Titular</label>
+            <input type="text" name="titular" value="{{ pago_data.titular or '' }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Monto transferido</label>
+            <input type="number" step="0.01" name="monto" value="{{ pago_data.monto or '' }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Referencia bancaria *</label>
+            <input type="text" name="referencia" value="{{ pago_data.referencia or '' }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de transferencia</label>
+            <input type="date" name="fecha_transferencia" value="{{ pago_data.fecha_transferencia or '' }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de moneda</label>
+          <input type="text" name="tipo_moneda" value="{{ pago_data.tipo_moneda or pago_data.moneda or '' }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones</label>
+          <textarea name="observaciones" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="2">{{ pago_data.observaciones or '' }}</textarea>
+        </div>
+        <div class="flex justify-between gap-4 pt-4">
+          <button type="button" onclick="window.history.back()" class="py-3 px-8 rounded-lg font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 shadow-lg transition">Anterior</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-lg transition transform hover:scale-105">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+        </div>
+      </form>
+      {% elif paso == 4 %}
+      <!-- Paso 4: Adjuntar Comprobante y Confirmar -->
+      <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        <input type="hidden" name="paso" value="4">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center"><i class="fas fa-image text-purple-500 mr-2"></i> Paso 4: Adjuntar Comprobante</h3>
+        <div class="mb-6">
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded text-blue-800">
+            <b>Resumen de tu pago:</b>
+            <ul class="mt-2 text-sm text-blue-900 space-y-1">
+              <li><b>Plan:</b> {{ plan_nombre|title }}</li>
+              <li><b>Tipo de pago:</b> {{ pago_data.tipo_pago }}</li>
+              <li><b>Moneda:</b> {{ pago_data.moneda }}</li>
+              <li><b>Método:</b> {{ pago_data.metodo }}</li>
+              <li><b>Titular:</b> {{ pago_data.titular }}</li>
+              <li><b>Monto:</b> {{ pago_data.monto }}</li>
+              <li><b>Referencia:</b> {{ pago_data.referencia }}</li>
+              <li><b>Fecha de transferencia:</b> {{ pago_data.fecha_transferencia }}</li>
+              <li><b>Tipo de moneda:</b> {{ pago_data.tipo_moneda }}</li>
+              <li><b>Observaciones:</b> {{ pago_data.observaciones }}</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Adjuntar comprobante de pago *</label>
+          <input type="file" name="imagen" accept="image/*,.pdf" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+          <p class="text-sm text-gray-500 mt-1">Formatos aceptados: JPG, PNG, PDF. Máximo 5MB.</p>
+        </div>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded text-green-800">
+          <div class="flex items-center">
+            <i class="fas fa-check-circle mr-3"></i>
+            <div>
+              <strong>¡Casi listo!</strong> Al enviar este formulario, tu pago quedará registrado y será revisado por nuestro equipo. Recibirás una notificación cuando sea aprobado.
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-between gap-4 pt-4">
+          <button type="button" onclick="window.history.back()" class="py-3 px-8 rounded-lg font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 shadow-lg transition">Anterior</button>
+          <button type="submit" class="py-3 px-8 rounded-lg font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg transition transform hover:scale-105">
+            <i class="fas fa-paper-plane mr-2"></i>Enviar Pago
+          </button>
+        </div>
+      </form>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %} 

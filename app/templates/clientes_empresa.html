@@ -1,0 +1,58 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  {% include 'partials/sidebar_empresa.html' %}
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-5xl mx-auto px-2 md:px-6 py-8 font-[Rubik] animate-fade-in">
+      <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Mis Clientes</h2>
+      <form method="get" class="mb-6 flex flex-col md:flex-row gap-4 items-center">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Buscar por nombre o cédula..." class="w-full md:w-72 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow transition">Buscar</button>
+      </form>
+      {% if clientes and clientes|length > 0 %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-xl shadow border border-gray-100">
+          <thead>
+            <tr class="bg-gradient-to-r from-blue-50 to-cyan-50 text-gray-700 text-sm">
+              <th class="px-4 py-3 text-left font-bold">Cédula</th>
+              <th class="px-4 py-3 text-left font-bold">Nombre</th>
+              <th class="px-4 py-3 text-left font-bold">Email</th>
+              <th class="px-4 py-3 text-left font-bold">Teléfono</th>
+              <th class="px-4 py-3 text-left font-bold">Estado</th>
+              <th class="px-4 py-3 text-left font-bold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in clientes %}
+            <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
+              <td class="px-4 py-3 whitespace-nowrap">{{ c.nacionalidad }}{{ c.cedula }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">{{ c.nombre }} {{ c.apellido }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">{{ c.email or '-' }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">{{ c.telefono or '-' }}</td>
+              <td class="px-4 py-3">
+                {% if c.is_verified %}
+                  <span class="inline-block px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Registrado</span>
+                {% else %}
+                  <span class="inline-block px-3 py-1 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">No registrado</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 flex gap-2">
+                <a href="/empresa/modificar_score/{{ c.id }}" class="px-3 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-bold hover:bg-blue-200 transition"><i class="fas fa-pen"></i> Modificar score</a>
+                <a href="/empresa/reportar_cliente/{{ c.id }}" class="px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold hover:bg-red-200 transition"><i class="fas fa-flag"></i> Reportar</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center text-gray-400 py-8">Aún no tienes clientes registrados o reportados.</div>
+      {% endif %}
+      <div class="mt-8 text-center">
+        <a href="/dashboard_empresa" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition">Volver al dashboard</a>
+      </div>
+    </main>
+    {% include 'partials/footer.html' %}
+  </div>
+</div>
+{% endblock %} 

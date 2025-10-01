@@ -1,0 +1,124 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+{% include 'partials/sidebar.html' %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-8">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-cash-register text-white text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">Gestión de Pagos</h2>
+        <p class="text-lg text-gray-600 max-w-xl mx-auto">Administra y valida los pagos de usuarios y empresas. Puedes filtrar, aprobar, rechazar, suspender o reactivar pagos y planes.</p>
+      </div>
+      <!-- Filtros -->
+      <form method="get" class="flex flex-col md:flex-row gap-4 items-center mb-8 bg-white rounded-xl shadow p-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Estado</label>
+          <select name="estado" class="rounded-lg border border-gray-300 px-3 py-2">
+            <option value="">Todos</option>
+            <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="aprobado" {% if estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+            <option value="rechazado" {% if estado == 'rechazado' %}selected{% endif %}>Rechazado</option>
+            <option value="suspendido" {% if estado == 'suspendido' %}selected{% endif %}>Suspendido</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Tipo de cuenta</label>
+          <select name="tipo_cuenta" class="rounded-lg border border-gray-300 px-3 py-2">
+            <option value="">Todos</option>
+            <option value="usuario" {% if tipo_cuenta == 'usuario' %}selected{% endif %}>Usuario</option>
+            <option value="empresa" {% if tipo_cuenta == 'empresa' %}selected{% endif %}>Empresa</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Mes</label>
+          <input type="month" name="mes" value="{{ mes or '' }}" class="rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Referencia</label>
+          <input type="text" name="referencia" value="{{ referencia or '' }}" placeholder="Buscar referencia" class="rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div class="pt-5 md:pt-0">
+          <button type="submit" class="py-2 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow transition">Filtrar</button>
+        </div>
+      </form>
+      <!-- Tabla de pagos -->
+      <div class="overflow-x-auto bg-white rounded-xl shadow">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="text-xs text-gray-600 uppercase">
+              <th class="py-2 px-2">Fecha</th>
+              <th class="py-2 px-2">Usuario/Empresa</th>
+              <th class="py-2 px-2">Monto</th>
+              <th class="py-2 px-2">Referencia</th>
+              <th class="py-2 px-2">Estado</th>
+              <th class="py-2 px-2">Método</th>
+              <th class="py-2 px-2">Comprobante</th>
+              <th class="py-2 px-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pago in pagos %}
+            <tr class="border-b hover:bg-blue-50">
+              <td class="py-2 px-2">{{ pago.created_at.strftime('%d/%m/%Y') if pago.created_at else '-' }}</td>
+              <td class="py-2 px-2">
+                {% if pago.company_id %}
+                  <span class="font-semibold text-purple-700">Empresa</span><br>
+                  <span class="text-xs text-gray-500">{{ pago.company_id }}</span>
+                {% elif pago.user_id %}
+                  <span class="font-semibold text-blue-700">Usuario</span><br>
+                  <span class="text-xs text-gray-500">{{ pago.user_id }}</span>
+                {% endif %}
+              </td>
+              <td class="py-2 px-2">{{ pago.monto }} {{ pago.moneda }}</td>
+              <td class="py-2 px-2">{{ pago.referencia }}</td>
+              <td class="py-2 px-2">
+                {% if pago.estado == 'pendiente' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"><i class="fas fa-clock mr-1"></i>Pendiente</span>
+                {% elif pago.estado == 'aprobado' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-800"><i class="fas fa-check-circle mr-1"></i>Aprobado</span>
+                {% elif pago.estado == 'rechazado' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-800"><i class="fas fa-times-circle mr-1"></i>Rechazado</span>
+                {% elif pago.estado == 'suspendido' %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800"><i class="fas fa-ban mr-1"></i>Suspendido</span>
+                {% else %}
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-800">{{ pago.estado|capitalize }}</span>
+                {% endif %}
+              </td>
+              <td class="py-2 px-2">{{ pago.metodo }}</td>
+              <td class="py-2 px-2">
+                {% if pago.imagen %}
+                  <a href="/{{ pago.imagen }}" target="_blank" class="text-blue-600 underline">Ver</a>
+                {% else %}
+                  <span class="text-gray-400">-</span>
+                {% endif %}
+              </td>
+              <td class="py-2 px-2">
+                <form method="post" class="flex flex-col gap-2">
+                  <input type="hidden" name="pago_id" value="{{ pago.id }}">
+                  <textarea name="comentario_admin" class="w-full rounded border border-gray-300 px-2 py-1 text-xs mb-1" placeholder="Comentario admin (opcional)"></textarea>
+                  <div class="flex flex-wrap gap-1">
+                    {% if pago.estado == 'pendiente' %}
+                      <button name="accion" value="aprobar" class="px-2 py-1 rounded bg-green-500 text-white text-xs font-bold hover:bg-green-600">Aprobar</button>
+                      <button name="accion" value="rechazar" class="px-2 py-1 rounded bg-red-500 text-white text-xs font-bold hover:bg-red-600">Rechazar</button>
+                      <button name="accion" value="suspender" class="px-2 py-1 rounded bg-gray-500 text-white text-xs font-bold hover:bg-gray-600">Suspender</button>
+                    {% elif pago.estado == 'suspendido' %}
+                      <button name="accion" value="reactivar" class="px-2 py-1 rounded bg-blue-500 text-white text-xs font-bold hover:bg-blue-600">Reactivar</button>
+                    {% endif %}
+                  </div>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="8" class="py-6 text-center text-gray-400">No se encontraron pagos con los filtros seleccionados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %} 

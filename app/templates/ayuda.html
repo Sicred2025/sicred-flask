@@ -1,0 +1,54 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+      <!-- Header de ayuda -->
+      <div class="text-center mb-12">
+        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-question-circle text-white text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Ayuda para Empresas</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Encuentra respuestas y guías para gestionar tu vida crediticia empresarial en SiCred.
+        </p>
+      </div>
+      <!-- Bloques de ayuda -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Reportar un cliente</h3>
+          <p class="text-gray-600 text-sm">Ve a la sección <b>Clientes</b> o <b>Reportes</b> y haz clic en <b>Reportar cliente</b>. Completa los datos y adjunta evidencia si es necesario.</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer">
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-chart-line text-green-600 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Modificar score de un cliente</h3>
+          <p class="text-gray-600 text-sm">En la ficha del cliente, haz clic en <b>Modificar score</b> y ajusta el impacto y monto según corresponda.</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer">
+          <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-file-alt text-yellow-600 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Consultar historial de reportes</h3>
+          <p class="text-gray-600 text-sm">Usa la sección <b>Reportes</b> para filtrar y ver todos los reportes realizados por tu empresa.</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer">
+          <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-gavel text-purple-600 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gestionar apelaciones</h3>
+          <p class="text-gray-600 text-sm">Accede a <b>Apelaciones</b> para ver y responder solicitudes de tus clientes.</p>
+        </div>
+      </div>
+      <!-- Bloque de contacto -->
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded text-blue-800 mb-8">
+        <b>¿Tienes otra pregunta?</b> Escríbenos desde la sección <b>Contacto</b> y te responderemos lo antes posible.
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %} 

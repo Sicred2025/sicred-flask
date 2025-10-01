@@ -1,0 +1,206 @@
+{% extends 'partials/base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-white md:bg-gradient-to-br md:from-blue-50 md:via-cyan-50 md:to-white" style="font-family: 'Rubik', sans-serif;">
+  <!-- Sidebar -->
+  {% include 'partials/sidebar.html' %}
+
+  <!-- Header móvil -->
+  <nav class="flex md:hidden w-full px-4 py-0 items-center justify-between sticky top-0 z-50 min-h-[56px] bg-gradient-to-r from-[#13c0ec] to-[#866dfc]">
+    <img src="{{ url_for('static', filename='logo.png') }}" class="h-8 w-auto" alt="Logo">
+    <div class="flex items-center gap-4">
+      <button class="relative text-white focus:outline-none">
+        <i class="fas fa-bell text-lg"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+      </button>
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Avatar" class="h-8 w-8 rounded-full border-2 border-white shadow">
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-h-screen md:ml-64 bg-gray-50">
+    <!-- Header escritorio -->
+    <header class="hidden md:flex w-full px-6 items-center justify-between sticky top-0 z-20 min-h-[64px] bg-gradient-to-r from-[#13c0ec] to-[#866dfc]">
+      <div class="flex items-center gap-3">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="h-8 w-auto" alt="Logo Sicred">
+        <div>
+          <h1 class="text-xl font-bold text-white">Notificaciones</h1>
+          <p class="text-sm text-blue-100">Mantente informado de tu vida crediticia</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+          <i class="fas fa-bell text-xl"></i>
+        </button>
+        <button class="relative text-white hover:text-[#343a40] focus:outline-none">
+          <i class="fas fa-cog text-xl"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-6">
+            {% for category, message in messages %}
+              <div class="px-4 py-3 rounded-lg mb-2 font-semibold 
+                {% if category == 'success' %}bg-green-100 text-green-800 border border-green-300
+                {% elif category == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
+                {% elif category == 'danger' %}bg-red-100 text-red-800 border border-red-300
+                {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Header de notificaciones -->
+      <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+              <i class="fas fa-bell text-white text-xl"></i>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Notificaciones</h2>
+              <p class="text-gray-600">Tienes {{ notifications|length }} notificaciones</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button id="marcar-todas-leidas" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+              <i class="fas fa-check-double mr-2"></i>Marcar todas como leídas
+            </button>
+            <button id="limpiar-notificaciones" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+              <i class="fas fa-trash mr-2"></i>Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de notificaciones -->
+      <div class="space-y-4">
+        {% if notifications %}
+          {% for notification in notifications %}
+            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 {% if notification.tipo == 'info' %}border-blue-500{% elif notification.tipo == 'warning' %}border-yellow-500{% elif notification.tipo == 'success' %}border-green-500{% elif notification.tipo == 'error' %}border-red-500{% endif %} {% if not notification.leida %}ring-2 ring-blue-200{% endif %}">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-4 flex-1">
+                  <!-- Icono según tipo -->
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center {% if notification.tipo == 'info' %}bg-blue-100 text-blue-600{% elif notification.tipo == 'warning' %}bg-yellow-100 text-yellow-600{% elif notification.tipo == 'success' %}bg-green-100 text-green-600{% elif notification.tipo == 'error' %}bg-red-100 text-red-600{% endif %}">
+                    {% if notification.tipo == 'info' %}
+                      <i class="fas fa-info-circle"></i>
+                    {% elif notification.tipo == 'warning' %}
+                      <i class="fas fa-exclamation-triangle"></i>
+                    {% elif notification.tipo == 'success' %}
+                      <i class="fas fa-check-circle"></i>
+                    {% elif notification.tipo == 'error' %}
+                      <i class="fas fa-times-circle"></i>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Contenido -->
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                      <h3 class="text-lg font-semibold text-gray-900">{{ notification.titulo }}</h3>
+                      {% if not notification.leida %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Nueva
+                        </span>
+                      {% endif %}
+                    </div>
+                    <p class="text-gray-600 mb-3">{{ notification.mensaje }}</p>
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                      <span><i class="fas fa-clock mr-1"></i>{{ notification.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</span>
+                      {% if notification.leida %}
+                        <span class="text-green-600"><i class="fas fa-check mr-1"></i>Leída</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Acciones -->
+                <div class="flex flex-col gap-2">
+                  {% if not notification.leida %}
+                    <button class="marcar-leida-btn px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm" data-id="{{ notification.id }}">
+                      <i class="fas fa-check mr-1"></i>Marcar leída
+                    </button>
+                  {% endif %}
+                  {% if notification.accion_url %}
+                    <a href="{{ notification.accion_url }}" class="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-sm text-center">
+                      <i class="fas fa-external-link-alt mr-1"></i>Ver más
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Estado vacío -->
+          <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <i class="fas fa-bell-slash text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No tienes notificaciones</h3>
+            <p class="text-gray-600 mb-6">Cuando tengas notificaciones importantes sobre tu vida crediticia, aparecerán aquí.</p>
+            <a href="/dashboard" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition">
+              <i class="fas fa-home mr-2"></i>Volver al Dashboard
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Marcar notificación como leída
+  document.querySelectorAll('.marcar-leida-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const notificationId = this.dataset.id;
+      fetch(`/marcar_notificacion_leida/${notificationId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Actualizar UI
+          const notificationCard = this.closest('.bg-white');
+          notificationCard.classList.remove('ring-2', 'ring-blue-200');
+          this.remove();
+          
+          // Agregar indicador de leída
+          const contentDiv = notificationCard.querySelector('.flex-1');
+          const fechaSpan = contentDiv.querySelector('.text-sm');
+          const leidaSpan = document.createElement('span');
+          leidaSpan.className = 'text-green-600 ml-4';
+          leidaSpan.innerHTML = '<i class="fas fa-check mr-1"></i>Leída';
+          fechaSpan.appendChild(leidaSpan);
+          
+          // Remover badge "Nueva"
+          const nuevaBadge = notificationCard.querySelector('.bg-blue-100');
+          if (nuevaBadge) nuevaBadge.remove();
+        }
+      });
+    });
+  });
+
+  // Marcar todas como leídas
+  document.getElementById('marcar-todas-leidas').addEventListener('click', function() {
+    const unreadNotifications = document.querySelectorAll('.marcar-leida-btn');
+    unreadNotifications.forEach(btn => btn.click());
+  });
+
+  // Limpiar notificaciones (implementar lógica)
+  document.getElementById('limpiar-notificaciones').addEventListener('click', function() {
+    if (confirm('¿Estás seguro de que quieres limpiar todas las notificaciones?')) {
+      // Implementar lógica de limpieza
+      console.log('Limpiando notificaciones...');
+    }
+  });
+});
+</script>
+{% endblock %} 
