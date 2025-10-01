@@ -1170,7 +1170,7 @@ def api_descargar_reporte(reporte_id):
     p.drawString(50, y, 'Datos del Reporte:')
     y -= 20
     p.setFont('Helvetica', 12)
-    p.drawString(50, y, f'Motivo: {rep.motivo if hasattr(rep, 'motivo') else getattr(rep, 'tipo', '')}')
+    p.drawString(50, y, f"Motivo: {rep.motivo if hasattr(rep, 'motivo') else getattr(rep, 'tipo', '')}")
     y -= 20
     p.drawString(50, y, f'Estado: {rep.estado}')
     y -= 20
